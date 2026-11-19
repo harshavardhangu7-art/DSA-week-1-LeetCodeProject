@@ -1,0 +1,42 @@
+import java.util.Arrays;
+
+class Solution {
+    public int[] closestPrimes(int left, int right) {
+        boolean[] isPrime = new boolean[right + 1];
+        if (right >= 2) {
+            Arrays.fill(isPrime, 2, right + 1, true);
+        }
+        
+        for (int i = 2; i * i <= right; i++) {
+            if (isPrime[i]) {
+                for (int j = i * i; j <= right; j += i) {
+                    isPrime[j] = false;
+                }
+            }
+        }
+        
+        int prevPrime = -1;
+        int minDiff = Integer.MAX_VALUE;
+        int[] ans = new int[]{-1, -1};
+        
+        for (int i = Math.max(2, left); i <= right; i++) {
+            if (isPrime[i]) {
+                if (prevPrime != -1) {
+                    int diff = i - prevPrime;
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        ans[0] = prevPrime;
+                        ans[1] = i;
+                    }
+                    // Optimization: 2 is the smallest possible gap between odd primes
+                    if (minDiff == 1 || minDiff == 2) {
+                        return ans;
+                    }
+                }
+                prevPrime = i;
+            }
+        }
+        
+        return ans;
+    }
+}
